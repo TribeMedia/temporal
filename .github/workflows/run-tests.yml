@@ -23,7 +23,11 @@ env:
 jobs:
   misc-checks:
     name: Misc checks
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        run-on: [ubuntu-latest-4-cores]
+    runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,8 +52,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+        run-on: [ubuntu-latest-4-cores]
+    runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,8 +78,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+        run-on: [ubuntu-latest-4-cores]
+    runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -109,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        run-on: [ubuntu-latest-4-cores]
         name: [cass_es, cass_es8, sqlite, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         shard_index: [0, 1, 2]
         include:
@@ -149,7 +153,7 @@ jobs:
             persistence_type: sql
             persistence_driver: postgres12_pgx
             containers: [postgresql]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.run-on }}
     env:
       TEST_TOTAL_SHARDS: 3
     steps:
@@ -190,7 +194,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        run-on: [ubuntu-latest-4-cores]
         name: [cass_es, cass_es8, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         include:
           - name: cass_es
@@ -225,7 +229,7 @@ jobs:
             persistence_type: sql
             persistence_driver: postgres12_pgx
             containers: [postgresql]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -263,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        run-on: [ubuntu-latest-4-cores]
         name: [cass_es, cass_es8, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         include:
           - name: cass_es
@@ -298,7 +302,7 @@ jobs:
             persistence_type: sql
             persistence_driver: postgres12_pgx
             containers: [postgresql]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
         with:
