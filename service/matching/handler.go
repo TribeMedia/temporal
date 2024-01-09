@@ -30,6 +30,8 @@ import (
 	"time"
 
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"go.temporal.io/server/api/matchingservice/v1"
 	"go.temporal.io/server/common"
@@ -362,6 +364,71 @@ func (h *Handler) ReplicateTaskQueueUserData(
 ) (_ *matchingservice.ReplicateTaskQueueUserDataResponse, retError error) {
 	defer log.CapturePanic(h.logger, &retError)
 	return h.engine.ReplicateTaskQueueUserData(ctx, request)
+}
+
+func (h *Handler) DispatchNexusTask(ctx context.Context, request *matchingservice.DispatchNexusTaskRequest) (_ *matchingservice.DispatchNexusTaskResponse, retError error) {
+	defer log.CapturePanic(h.logger, &retError)
+	return h.engine.DispatchNexusTask(ctx, request)
+}
+
+func (h *Handler) PollNexusTaskQueue(ctx context.Context, request *matchingservice.PollNexusTaskQueueRequest) (_ *matchingservice.PollNexusTaskQueueResponse, retError error) {
+	defer log.CapturePanic(h.logger, &retError)
+	opMetrics := h.opMetricsHandler(
+		namespace.ID(request.GetNamespaceId()),
+		request.GetRequest().GetTaskQueue(),
+		metrics.MatchingPollWorkflowTaskQueueScope,
+	)
+
+	if request.GetForwardedSource() != "" {
+		h.reportForwardedPerTaskQueueCounter(opMetrics, namespace.ID(request.GetNamespaceId()))
+	}
+
+	if _, err := common.ValidateLongPollContextTimeoutIsSet(
+		ctx,
+		"PollNexusTaskQueue",
+		h.throttledLogger,
+	); err != nil {
+		return nil, err
+	}
+	return h.engine.PollNexusTaskQueue(ctx, request, opMetrics)
+}
+
+func (h *Handler) RespondNexusTaskCompleted(ctx context.Context, request *matchingservice.RespondNexusTaskCompletedRequest) (_ *matchingservice.RespondNexusTaskCompletedResponse, retError error) {
+	defer log.CapturePanic(h.logger, &retError)
+	opMetrics := h.opMetricsHandler(
+		namespace.ID(request.GetNamespaceId()),
+		request.GetTaskQueue(),
+		metrics.MatchingRespondNexusTaskCompletedScope,
+	)
+
+	return h.engine.RespondNexusTaskCompleted(ctx, request, opMetrics)
+}
+
+func (h *Handler) RespondNexusTaskFailed(ctx context.Context, request *matchingservice.RespondNexusTaskFailedRequest) (_ *matchingservice.RespondNexusTaskFailedResponse, retError error) {
+	defer log.CapturePanic(h.logger, &retError)
+	opMetrics := h.opMetricsHandler(
+		namespace.ID(request.GetNamespaceId()),
+		request.GetTaskQueue(),
+		metrics.MatchingRespondNexusTaskFailedScope,
+	)
+
+	return h.engine.RespondNexusTaskFailed(ctx, request, opMetrics)
+}
+
+func (h *Handler) CreateOrUpdateNexusService(ctx context.Context, request *matchingservice.CreateOrUpdateNexusServiceRequest) (*matchingservice.CreateOrUpdateNexusServiceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
+}
+
+func (h *Handler) DeleteNexusService(ctx context.Context, request *matchingservice.DeleteNexusServiceRequest) (*matchingservice.DeleteNexusServiceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
+}
+
+func (h *Handler) GetNexusService(ctx context.Context, request *matchingservice.GetNexusServiceRequest) (*matchingservice.GetNexusServiceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
+}
+
+func (h *Handler) ListNexusServices(ctx context.Context, request *matchingservice.ListNexusServicesRequest) (*matchingservice.ListNexusServicesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
 }
 
 func (h *Handler) namespaceName(id namespace.ID) namespace.Name {

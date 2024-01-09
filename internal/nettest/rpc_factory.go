@@ -92,11 +92,12 @@ func (f *RPCFactory) dial(rpcAddress string) *grpc.ClientConn {
 		}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-	conn, err := grpc.DialContext(
-		f.contextFactory(),
-		rpcAddress,
-		dialOptions...,
-	)
+	ctx := f.contextFactory()
+	if err := ctx.Err(); err != nil {
+		panic(err)
+	}
+	// check context error here since grpc 1.60.1 DialContext doesn't error if context is already canceled.
+	conn, err := grpc.DialContext(ctx, rpcAddress, dialOptions...)
 	if err != nil {
 		panic(err)
 	}

@@ -133,6 +133,7 @@ func (s *FunctionalTestBase) setupSuite(defaultClusterConfigFile string, options
 	})
 	maps.Copy(clusterConfig.DynamicConfigOverrides, s.dynamicConfigOverrides)
 	clusterConfig.ServiceFxOptions = params.ServiceOptions
+	clusterConfig.EnableMetricsCapture = true
 	s.testClusterConfig = clusterConfig
 
 	if clusterConfig.FrontendAddress != "" {
