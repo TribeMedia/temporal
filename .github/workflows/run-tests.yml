@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
     runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
     runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
     runs-on: ${{ matrix.run-on }}
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
         name: [cass_es, cass_es8, sqlite, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         shard_index: [0, 1, 2]
         include:
@@ -194,7 +194,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
         name: [cass_es, cass_es8, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         include:
           - name: cass_es
@@ -267,7 +267,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run-on: [ubuntu-latest-4-cores]
+        run-on: [ubuntu-latest-16-cores]
         name: [cass_es, cass_es8, mysql, mysql8, postgres, postgres_pgx, postgres12, postgres12_pgx]
         include:
           - name: cass_es
