@@ -46,6 +46,25 @@ jobs:
 
       - run: make build-tests
 
+  cache-docker-images:
+    name: Cache Docker images
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ env.COMMIT }}
+
+      - run: docker-compose -f ${{ env.DOCKER_COMPOSE_FILE }} pull
+
   unit-test:
     name: Unit test
     needs: misc-checks
@@ -78,13 +97,17 @@ jobs:
 
   integration-test:
     name: Integration test
-    needs: misc-checks
+    needs: [misc-checks, cache-docker-images]
     strategy:
       fail-fast: false
       matrix:
         runs-on: [ubuntu-latest]
     runs-on: ${{ matrix.runs-on }}
     steps:
+      - uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
+
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -117,7 +140,7 @@ jobs:
 
   functional-test:
     name: Functional test
-    needs: misc-checks
+    needs: [misc-checks, cache-docker-images]
     strategy:
       fail-fast: false
       matrix:
@@ -168,6 +191,10 @@ jobs:
       PERSISTENCE_TYPE: ${{ matrix.persistence_type }}
       PERSISTENCE_DRIVER: ${{ matrix.persistence_driver }}
     steps:
+      - uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
+
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -201,7 +228,7 @@ jobs:
 
   functional-test-xdc:
     name: Functional test xdc
-    needs: misc-checks
+    needs: [misc-checks, cache-docker-images]
     strategy:
       fail-fast: false
       matrix:
@@ -245,6 +272,10 @@ jobs:
       PERSISTENCE_TYPE: ${{ matrix.persistence_type }}
       PERSISTENCE_DRIVER: ${{ matrix.persistence_driver }}
     steps:
+      - uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
+
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -278,7 +309,7 @@ jobs:
 
   functional-test-ndc:
     name: Functional test ndc
-    needs: misc-checks
+    needs: [misc-checks, cache-docker-images]
     strategy:
       fail-fast: false
       matrix:
@@ -322,6 +353,10 @@ jobs:
       PERSISTENCE_TYPE: ${{ matrix.persistence_type }}
       PERSISTENCE_DRIVER: ${{ matrix.persistence_driver }}
     steps:
+      - uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
+
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
